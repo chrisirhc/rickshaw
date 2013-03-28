@@ -1,22 +1,26 @@
 Rickshaw.namespace('Rickshaw.Graph.Annotate');
 
-Rickshaw.Graph.Annotate = function(args) {
+Rickshaw.Graph.Annotate = Rickshaw.Class.create({
 
-	var graph = this.graph = args.graph;
-	this.elements = { timeline: args.element };
-	
-	var self = this;
+	initialize: function(args) {
+		this.graph = args.graph;
+		this.elements = { timeline: args.element };
 
-	this.data = {};
+		this.data = {};
 
-	this.elements.timeline.classList.add('rickshaw_annotation_timeline');
+		this.elements.timeline.classList.add('rickshaw_annotation_timeline');
+		var self = this;
+		this.graph.onUpdate( function() { self.update() } );
+	},
 
-	this.add = function(time, content, end_time) {
+	add: function(time, content, end_time) {
+		var self = this;
 		self.data[time] = self.data[time] || {'boxes': []};
 		self.data[time].boxes.push({content: content, end: end_time});
-	};
+	},
 
-	this.update = function() {
+	update: function() {
+		var self = this;
 
 		Rickshaw.keys(self.data).forEach( function(time) {
 
@@ -99,7 +103,6 @@ Rickshaw.Graph.Annotate = function(args) {
 				annotation.line.style.left = left + 'px';
 			} );
 		}, this );
-	};
+	}
+});
 
-	this.graph.onUpdate( function() { self.update() } );
-};

@@ -1,27 +1,36 @@
 Rickshaw.namespace('Rickshaw.Graph.Legend');
 
-Rickshaw.Graph.Legend = function(args) {
+Rickshaw.Graph.Legend = Rickshaw.Class.create({
 
-	var element = this.element = args.element;
-	var graph = this.graph = args.graph;
+	initialize: function (args) {
+		var element = this.element = args.element;
+		var graph = this.graph = args.graph;
 
-	var self = this;
+		var self = this;
 
-	element.classList.add('rickshaw_legend');
+		element.classList.add('rickshaw_legend');
 
-	var list = this.list = document.createElement('ul');
-	element.appendChild(list);
+		this.list = document.createElement('ul');
+		element.appendChild(this.list);
 
-	var series = graph.series
-		.map( function(s) { return s } );
+		var series = graph.series
+			.map( function(s) { return s } );
 
-	if (!args.naturalOrder) {
-		series = series.reverse();
-	}
+		if (!args.naturalOrder) {
+			series = series.reverse();
+		}
 
-	this.lines = [];
+		this.lines = [];
 
-	this.addLine = function (series) {
+		series.forEach( function(s) {
+			self.addLine(s);
+		} );
+
+		// graph.onUpdate( function() {} );
+	},
+
+	addLine: function (series) {
+		var self = this;
 		var line = document.createElement('li');
 		line.className = 'line';
 		if (series.disabled) {
@@ -39,7 +48,7 @@ Rickshaw.Graph.Legend = function(args) {
 		label.innerHTML = series.name;
 
 		line.appendChild(label);
-		list.appendChild(line);
+		this.list.appendChild(line);
 
 		line.series = series;
 
@@ -56,11 +65,6 @@ Rickshaw.Graph.Legend = function(args) {
 			self.highlighter.addHighlightEvents(_line);
 		}
 		self.lines.push(_line);
-	};
+	}
+});
 
-	series.forEach( function(s) {
-		self.addLine(s);
-	} );
-
-	graph.onUpdate( function() {} );
-};
