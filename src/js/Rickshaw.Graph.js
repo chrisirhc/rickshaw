@@ -47,6 +47,10 @@ Rickshaw.Graph = function(args) {
 			Rickshaw.Graph.Renderer.ScatterPlot
 		];
 
+		this.x = d3.scale.linear();
+		this.y = d3.scale.linear();
+		this.y.magnitude= d3.scale.linear();
+
 		renderers.forEach( function(r) {
 			if (!r) return;
 			self.registerRenderer(new r( { graph: self } ));
@@ -101,11 +105,11 @@ Rickshaw.Graph = function(args) {
 
 		var domain = this.renderer.domain();
 
-		this.x = d3.scale.linear().domain(domain.x).range([0, this.width]);
+		this.x.domain(domain.x).range([0, this.width]);
 
-		this.y = d3.scale.linear().domain(domain.y).range([this.height, 0]);
+		this.y.domain(domain.y).range([this.height, 0]);
 
-		this.y.magnitude = d3.scale.linear()
+		this.y.magnitude
 			.domain([domain.y[0] - domain.y[0], domain.y[1] - domain.y[0]])
 			.range([0, this.height]);
 	};
