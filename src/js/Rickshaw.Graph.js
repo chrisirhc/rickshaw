@@ -157,6 +157,13 @@ Rickshaw.Graph = function(args) {
 			stackedData = entry.f.apply(self, [data]);
 		} );
 
+		// Sort all data by x
+		stackedData = stackedData.map(function (data) {
+			return data.sort(function (a, b) {
+				return d3.ascending(a.x, b.x);
+			});
+		});
+
 		var i = 0;
 		this.series.forEach( function(series) {
 			if (series.disabled) return;
