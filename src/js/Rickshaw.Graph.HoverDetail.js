@@ -103,7 +103,7 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 
 		}, this );
 
-
+		if (!nearestPoint) return;
 		nearestPoint.active = true;
 
 		var domainX = nearestPoint.value.x;

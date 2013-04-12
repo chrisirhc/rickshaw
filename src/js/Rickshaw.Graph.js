@@ -80,6 +80,7 @@ Rickshaw.Graph = function(args) {
 			if (!(s.data instanceof Array)) {
 				throw "series data is not an array: " + JSON.stringify(s.data);
 			}
+			if (!s.data.length) return; // Stop validation if data is empty
 
 			var x = s.data[0].x;
 			var y = s.data[0].y;
