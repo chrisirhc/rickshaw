@@ -1,20 +1,23 @@
 Rickshaw.namespace('Rickshaw.Graph.Axis.Time');
 
-Rickshaw.Graph.Axis.Time = function(args) {
+Rickshaw.Graph.Axis.Time = Rickshaw.Class.create({
 
-	var self = this;
+	initialize: function(args) {
+		var self = this;
 
-	this.graph = args.graph;
-	this.elements = [];
-	this.ticksTreatment = args.ticksTreatment || 'plain';
-	this.fixedTimeUnit = args.timeUnit;
+		this.graph = args.graph;
+		this.elements = [];
+		this.ticksTreatment = args.ticksTreatment || 'plain';
+		this.fixedTimeUnit = args.timeUnit;
 
-	var time = new Rickshaw.Fixtures.Time();
+		this.time = new Rickshaw.Fixtures.Time();
+		this.graph.onUpdate( function() { self.render() } );
+	},
 
-	this.appropriateTimeUnit = function() {
+	appropriateTimeUnit: function() {
 
 		var unit;
-		var units = time.units;
+		var units = this.time.units;
 
 		var domain = this.graph.x.domain();
 		var rangeSeconds = domain[1] - domain[0];
@@ -25,10 +28,10 @@ Rickshaw.Graph.Axis.Time = function(args) {
 			}
 		} );
 
-		return (unit || time.units[time.units.length - 1]);
-	};
+		return (unit || this.time.units[this.time.units.length - 1]);
+	},
 
-	this.tickOffsets = function() {
+	tickOffsets: function() {
 
 		var domain = this.graph.x.domain();
 
@@ -41,16 +44,17 @@ Rickshaw.Graph.Axis.Time = function(args) {
 
 		for (var i = 0; i < count; i++) {
 
-			var tickValue = time.ceil(runningTick, unit);
+			var tickValue = this.time.ceil(runningTick, unit);
 			runningTick = tickValue + unit.seconds / 2;
 
 			offsets.push( { value: tickValue, unit: unit } );
 		}
 
 		return offsets;
-	};
+	},
 
-	this.render = function() {
+	render: function() {
+		var self = this;
 
 		this.elements.forEach( function(e) {
 			e.parentNode.removeChild(e);
@@ -78,8 +82,7 @@ Rickshaw.Graph.Axis.Time = function(args) {
 			self.elements.push(element);
 
 		} );
-	};
+	}
 
-	this.graph.onUpdate( function() { self.render() } );
-};
+});
 
