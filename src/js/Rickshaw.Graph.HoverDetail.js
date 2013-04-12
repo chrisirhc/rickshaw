@@ -37,6 +37,8 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 
 	update: function(e) {
 
+		var xBisector = Rickshaw.Graph.HoverDetail.xBisector;
+
 		e = e || this.lastEvent;
 		if (!e) return;
 		this.lastEvent = e;
@@ -56,25 +58,20 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 
 			var data = this.graph.stackedData[j++];
 
+			if (!data.length) return;
+
 			var domainX = graph.x.invert(eventX);
 
-			var domainIndexScale = d3.scale.linear()
-				.domain([data[0].x, data.slice(-1)[0].x])
-				.range([0, data.length - 1]);
+			var dataIndex = xBisector.left(data, domainX);
 
-			var approximateIndex = Math.round(domainIndexScale(domainX));
-			var dataIndex = Math.min(approximateIndex || 0, data.length - 1);
-
-			for (var i = approximateIndex; i < data.length - 1;) {
-
-				if (!data[i] || !data[i + 1]) break;
-
-				if (data[i].x <= domainX && data[i + 1].x > domainX) {
-					dataIndex = i;
-					break;
+			if (dataIndex > 0) {
+				// Check if index to the left is closer
+				if (data[dataIndex] && data[dataIndex - 1] &&
+					data[dataIndex].x - domainX > domainX - data[dataIndex - 1].x) {
+					dataIndex--;
 				}
-
-				if (data[i + 1].x <= domainX) { i++ } else { i-- }
+			} else if (dataIndex == data.length) {
+				dataIndex--;
 			}
 
 			if (dataIndex < 0) dataIndex = 0;
@@ -216,3 +213,4 @@ Rickshaw.Graph.HoverDetail = Rickshaw.Class.create({
 	}
 });
 
+Rickshaw.Graph.HoverDetail.xBisector = d3.bisector(function (d) { return d.x; });
